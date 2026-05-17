@@ -76,13 +76,13 @@ export default function BillDetailPage() {
           </div>
         )}
         {/* Header */}
-        <div className="flex items-center gap-4 border-b border-zinc-200 pb-4 mb-4 dark:border-zinc-700 print:border-black print:pb-2 print:mb-2">
+        <div className="relative border-b border-zinc-200 pb-4 mb-4 dark:border-zinc-700 print:border-black print:pb-2 print:mb-2">
           <img
             src="/logo.jpg"
             alt="Butwal Neo Clinic"
-            className="h-16 w-auto object-contain print:h-12"
+            className="absolute left-0 top-0 h-24 w-auto object-contain print:h-20"
           />
-          <div className="flex-1 text-left">
+          <div className="text-center">
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 print:text-black print:text-xl">
               Butwal Neo Clinic
             </h1>
