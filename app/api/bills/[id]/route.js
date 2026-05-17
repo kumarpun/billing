@@ -71,7 +71,7 @@ export async function PUT(request, { params }) {
     }
 
     const { id } = await params;
-    const { customerName, items } = await request.json();
+    const { customerName, items, discountPercent } = await request.json();
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -135,10 +135,16 @@ export async function PUT(request, { params }) {
       });
     }
 
-    const totalAmount = billItems.reduce((sum, i) => sum + i.amount, 0);
+    const subtotal = billItems.reduce((sum, i) => sum + i.amount, 0);
+    const pct = Math.min(Math.max(Number(discountPercent) || 0, 0), 100);
+    const discountAmount = +(subtotal * pct / 100).toFixed(2);
+    const totalAmount = +(subtotal - discountAmount).toFixed(2);
 
     oldBill.customerName = customerName || "";
     oldBill.items = billItems;
+    oldBill.subtotal = subtotal;
+    oldBill.discountPercent = pct;
+    oldBill.discountAmount = discountAmount;
     oldBill.totalAmount = totalAmount;
     await oldBill.save();
 

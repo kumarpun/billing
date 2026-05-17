@@ -81,6 +81,11 @@ export default function BillsPage() {
                   ₹{b.totalAmount.toFixed(2)}
                 </span>
               </div>
+              {(b.discountPercent ?? 0) > 0 && (
+                <div className="mb-2 text-xs text-red-600 dark:text-red-400">
+                  Discount: {b.discountPercent}% (−₹{(b.discountAmount ?? 0).toFixed(2)})
+                </div>
+              )}
               <div className="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mb-3">
                 <span>{b.customerName || "No customer"}</span>
                 <span>
@@ -123,6 +128,7 @@ export default function BillsPage() {
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Bill #</th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Customer</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Items</th>
+                  <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Disc %</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Total</th>
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Date</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Action</th>
@@ -134,6 +140,9 @@ export default function BillsPage() {
                     <td className="px-4 py-3 font-mono font-medium text-zinc-900 dark:text-zinc-50">#{b.billNumber}</td>
                     <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300">{b.customerName || "—"}</td>
                     <td className="px-4 py-3 text-right text-zinc-500 dark:text-zinc-400">{b.items.length}</td>
+                    <td className="px-4 py-3 text-right text-red-600 dark:text-red-400">
+                      {(b.discountPercent ?? 0) > 0 ? `${b.discountPercent}%` : "—"}
+                    </td>
                     <td className="px-4 py-3 text-right font-medium text-zinc-900 dark:text-zinc-50">₹{b.totalAmount.toFixed(2)}</td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">
                       {new Date(b.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}

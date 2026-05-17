@@ -112,9 +112,9 @@ export default function Nav() {
           <div className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/billing"
-              className="text-lg font-bold text-zinc-900 dark:text-zinc-50"
+              className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 whitespace-nowrap"
             >
-              BillPrint
+              Butwal Neo Clinic
             </Link>
             {/* Desktop links */}
             <div className="hidden sm:flex gap-1">

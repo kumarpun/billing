@@ -19,7 +19,18 @@ export async function PATCH(request, { params }) {
     }
 
     const { id } = await params;
-    const updates = await request.json();
+    const body = await request.json();
+
+    const updates = {};
+    if (body.name !== undefined) updates.name = body.name;
+    if (body.price !== undefined) updates.price = Number(body.price);
+    if (body.discount !== undefined) {
+      updates.discount = Math.min(Math.max(Number(body.discount) || 0, 0), 100);
+    }
+    if (body.unit !== undefined) {
+      updates.unit = body.unit === "month" ? "month" : "day";
+    }
+    if (body.stock !== undefined) updates.stock = Number(body.stock) || 0;
 
     await connectDB();
     const product = await Product.findByIdAndUpdate(id, updates, { new: true });

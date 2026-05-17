@@ -34,7 +34,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { name, price, unit, stock } = await request.json();
+    const { name, price, discount, unit } = await request.json();
 
     if (!name || price == null) {
       return NextResponse.json(
@@ -43,12 +43,15 @@ export async function POST(request) {
       );
     }
 
+    const u = unit === "month" ? "month" : "day";
+    const d = Math.min(Math.max(Number(discount) || 0, 0), 100);
+
     await connectDB();
     const product = await Product.create({
       name,
       price: Number(price),
-      unit: unit || "piece",
-      stock: Number(stock) || 0,
+      discount: d,
+      unit: u,
     });
 
     return NextResponse.json({ product }, { status: 201 });

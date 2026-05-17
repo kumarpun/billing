@@ -9,7 +9,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: "", price: "", unit: "piece", stock: "" });
+  const [form, setForm] = useState({ name: "", price: "", discount: "", unit: "day" });
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -31,7 +31,7 @@ export default function ProductsPage() {
 
   function openAdd() {
     setEditingId(null);
-    setForm({ name: "", price: "", unit: "piece", stock: "" });
+    setForm({ name: "", price: "", discount: "", unit: "day" });
     setError("");
     setShowModal(true);
   }
@@ -41,8 +41,8 @@ export default function ProductsPage() {
     setForm({
       name: product.name,
       price: String(product.price),
-      unit: product.unit,
-      stock: String(product.stock),
+      discount: product.discount != null ? String(product.discount) : "",
+      unit: product.unit === "month" ? "month" : "day",
     });
     setError("");
     setShowModal(true);
@@ -51,7 +51,7 @@ export default function ProductsPage() {
   function closeModal() {
     setShowModal(false);
     setEditingId(null);
-    setForm({ name: "", price: "", unit: "piece", stock: "" });
+    setForm({ name: "", price: "", discount: "", unit: "day" });
     setError("");
   }
 
@@ -68,8 +68,8 @@ export default function ProductsPage() {
     const body = {
       name: form.name,
       price: Number(form.price),
+      discount: Number(form.discount) || 0,
       unit: form.unit,
-      stock: Number(form.stock) || 0,
     };
 
     let res;
@@ -163,8 +163,14 @@ export default function ProductsPage() {
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">₹{p.price.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mb-3">
-                <span>{p.unit}</span>
-                <span>Stock: {p.stock}</span>
+                <span>per {p.unit}</span>
+                <span>
+                  {(p.discount ?? 0) > 0 ? (
+                    <span className="text-red-600 dark:text-red-400">{p.discount}% off</span>
+                  ) : (
+                    "No discount"
+                  )}
+                </span>
               </div>
               <div className="flex gap-3 text-sm">
                 <button onClick={() => openEdit(p)} className="text-blue-600 dark:text-blue-400">Edit</button>
@@ -182,8 +188,8 @@ export default function ProductsPage() {
                 <tr className="border-b border-zinc-200 dark:border-zinc-800">
                   <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Name</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Price</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Unit</th>
-                  <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Stock</th>
+                  <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Discount</th>
+                  <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Duration</th>
                   <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Actions</th>
                 </tr>
               </thead>
@@ -192,8 +198,10 @@ export default function ProductsPage() {
                   <tr key={p._id} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
                     <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-50">{p.name}</td>
                     <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300">₹{p.price.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">{p.unit}</td>
-                    <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300">{p.stock}</td>
+                    <td className="px-4 py-3 text-right text-red-600 dark:text-red-400">
+                      {(p.discount ?? 0) > 0 ? `${p.discount}%` : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">per {p.unit}</td>
                     <td className="px-4 py-3 text-right space-x-2">
                       <button onClick={() => openEdit(p)} className="text-blue-600 hover:underline dark:text-blue-400">Edit</button>
                       <button onClick={() => handleDelete(p._id)} className="text-red-600 hover:underline dark:text-red-400">Delete</button>
@@ -242,7 +250,6 @@ export default function ProductsPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Paracetamol 500mg"
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -258,7 +265,6 @@ export default function ProductsPage() {
                   </label>
                   <input
                     type="number"
-                    placeholder="0.00"
                     required
                     min="0"
                     step="0.01"
@@ -269,28 +275,30 @@ export default function ProductsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Unit
+                    Discount (%)
                   </label>
                   <input
-                    type="text"
-                    placeholder="strip, bottle"
-                    value={form.unit}
-                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value={form.discount}
+                    onChange={(e) => setForm({ ...form, discount: e.target.value })}
                     className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Stock
+                    Duration
                   </label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    value={form.stock}
-                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
-                  />
+                  <select
+                    value={form.unit}
+                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+                  >
+                    <option value="day">Day</option>
+                    <option value="month">Month</option>
+                  </select>
                 </div>
               </div>
 

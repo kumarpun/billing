@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { formatBs } from "@/lib/nepaliDate";
 
 export default function BillDetailPage() {
   const { id } = useParams();
@@ -123,10 +124,16 @@ export default function BillDetailPage() {
         {/* Header */}
         <div className="text-center border-b border-zinc-200 pb-4 mb-4 dark:border-zinc-700 print:border-black">
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 print:text-black">
-            Medical Store
+            Butwal Neo Clinic
           </h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-300 print:text-black">
+            Dharmapath-8, Sukkhanagar, Butwal
+          </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
-            Your trusted healthcare partner
+            butwalneoclinic@gmail.com
+          </p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
+            PAN: 133660229
           </p>
         </div>
 
@@ -152,11 +159,7 @@ export default function BillDetailPage() {
             <p className="text-zinc-500 dark:text-zinc-400 print:text-gray-500">
               Date:{" "}
               <span className="text-zinc-900 dark:text-zinc-50 print:text-black">
-                {new Date(bill.createdAt).toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {formatBs(new Date(bill.createdAt))}
               </span>
             </p>
             <p className="text-zinc-500 dark:text-zinc-400 print:text-gray-500">
@@ -220,16 +223,33 @@ export default function BillDetailPage() {
 
         {/* Total */}
         <div className="flex justify-end border-t-2 border-zinc-300 pt-3 dark:border-zinc-600 print:border-black">
-          <div className="text-right">
-            <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50 print:text-black">
-              Total: ₹{bill.totalAmount.toFixed(2)}
-            </span>
+          <div className="text-right space-y-1 min-w-[200px]">
+            {(bill.discountPercent ?? 0) > 0 && (
+              <>
+                <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400 print:text-gray-700">
+                  <span>Subtotal:</span>
+                  <span>₹{(bill.subtotal ?? bill.totalAmount).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400 print:text-gray-700">
+                  <span>Discount ({bill.discountPercent}%):</span>
+                  <span>− ₹{(bill.discountAmount ?? 0).toFixed(2)}</span>
+                </div>
+              </>
+            )}
+            <div className="flex justify-between border-t border-zinc-300 pt-1 dark:border-zinc-600 print:border-black">
+              <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50 print:text-black">
+                Total:
+              </span>
+              <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50 print:text-black">
+                ₹{bill.totalAmount.toFixed(2)}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-zinc-400 dark:text-zinc-500 print:text-gray-500">
-          <p>Thank you for your purchase!</p>
+          <p>Celebrating Every Milestone</p>
         </div>
       </div>
     </div>

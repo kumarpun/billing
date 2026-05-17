@@ -51,7 +51,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { customerName, items } = await request.json();
+    const { customerName, items, discountPercent } = await request.json();
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -103,7 +103,10 @@ export async function POST(request) {
       });
     }
 
-    const totalAmount = billItems.reduce((sum, i) => sum + i.amount, 0);
+    const subtotal = billItems.reduce((sum, i) => sum + i.amount, 0);
+    const pct = Math.min(Math.max(Number(discountPercent) || 0, 0), 100);
+    const discountAmount = +(subtotal * pct / 100).toFixed(2);
+    const totalAmount = +(subtotal - discountAmount).toFixed(2);
 
     const [counter] = await Promise.all([
       Counter.findOneAndUpdate(
@@ -118,6 +121,9 @@ export async function POST(request) {
       billNumber: counter.seq,
       customerName: customerName || "",
       items: billItems,
+      subtotal,
+      discountPercent: pct,
+      discountAmount,
       totalAmount,
       createdBy: user.userId,
     });

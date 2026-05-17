@@ -10,6 +10,7 @@ export default function EditBillPage() {
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
   const [customerName, setCustomerName] = useState("");
+  const [discountPercent, setDiscountPercent] = useState("");
   const [billNumber, setBillNumber] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -29,6 +30,7 @@ export default function EditBillPage() {
         const bill = billData.bill;
         setBillNumber(bill.billNumber);
         setCustomerName(bill.customerName || "");
+        setDiscountPercent(bill.discountPercent ? String(bill.discountPercent) : "");
         setCart(
           bill.items.map((item) => ({
             productId: item.productId,
@@ -79,7 +81,10 @@ export default function EditBillPage() {
     setCart(cart.filter((c) => c.productId !== productId));
   }
 
-  const total = cart.reduce((sum, c) => sum + c.productPrice * c.quantity, 0);
+  const subtotal = cart.reduce((sum, c) => sum + c.productPrice * c.quantity, 0);
+  const pct = Math.min(Math.max(Number(discountPercent) || 0, 0), 100);
+  const discountAmount = (subtotal * pct) / 100;
+  const total = subtotal - discountAmount;
 
   async function handleUpdate() {
     if (cart.length === 0) return;
@@ -91,6 +96,7 @@ export default function EditBillPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerName,
+          discountPercent: pct,
           items: cart.map((c) => ({
             productId: c.productId,
             quantity: c.quantity,
@@ -234,13 +240,43 @@ export default function EditBillPage() {
 
               {cart.length > 0 && (
                 <>
-                  <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-700">
-                    <span className="text-base font-bold text-zinc-900 dark:text-zinc-50">
-                      Total
-                    </span>
-                    <span className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                      ₹{total.toFixed(2)}
-                    </span>
+                  <div className="mt-4 border-t border-zinc-200 pt-4 dark:border-zinc-700 space-y-2">
+                    <div className="flex items-center justify-between text-sm text-zinc-600 dark:text-zinc-400">
+                      <span>Subtotal</span>
+                      <span>₹{subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="text-sm text-zinc-600 dark:text-zinc-400">
+                        Discount %
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.01"
+                          placeholder="0"
+                          value={discountPercent}
+                          onChange={(e) => setDiscountPercent(e.target.value)}
+                          className="w-20 rounded border border-zinc-300 px-2 py-1 text-right text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+                        />
+                        <span className="text-sm text-zinc-500">%</span>
+                      </div>
+                    </div>
+                    {pct > 0 && (
+                      <div className="flex items-center justify-between text-sm text-red-600 dark:text-red-400">
+                        <span>Discount ({pct}%)</span>
+                        <span>− ₹{discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                      <span className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+                        Total
+                      </span>
+                      <span className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
+                        ₹{total.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                   <div className="mt-4 flex gap-2">
                     <button
