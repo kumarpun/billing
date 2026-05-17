@@ -24,12 +24,19 @@ export async function GET(request) {
 
     const url = new URL(request.url);
     const paid = url.searchParams.get("paid");
+    const limit = Math.min(Number(url.searchParams.get("limit")) || 100, 500);
+    const skip = Math.max(Number(url.searchParams.get("skip")) || 0, 0);
 
     const filter = {};
     if (paid === "true") filter.paid = true;
     else if (paid === "false") filter.paid = false;
 
-    const bills = await Bill.find(filter).sort({ createdAt: -1 }).lean();
+    const bills = await Bill.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
     return NextResponse.json({ bills });
   } catch (error) {
     console.error("Bills GET error:", error);
@@ -55,10 +62,16 @@ export async function POST(request) {
 
     await connectDB();
 
-    // Build bill items with snapshot data and decrement stock
+    const productIds = items.map((i) => i.productId);
+    const products = await Product.find({ _id: { $in: productIds } })
+      .select("_id name price")
+      .lean();
+    const productMap = new Map(products.map((p) => [String(p._id), p]));
+
     const billItems = [];
+    const stockOps = [];
     for (const item of items) {
-      const product = await Product.findById(item.productId);
+      const product = productMap.get(String(item.productId));
       if (!product) {
         return NextResponse.json(
           { error: `Product not found: ${item.productId}` },
@@ -74,11 +87,6 @@ export async function POST(request) {
         );
       }
 
-      // Decrement stock
-      await Product.findByIdAndUpdate(product._id, {
-        $inc: { stock: -quantity },
-      });
-
       billItems.push({
         productId: product._id,
         productName: product.name,
@@ -86,16 +94,25 @@ export async function POST(request) {
         quantity,
         amount: product.price * quantity,
       });
+
+      stockOps.push({
+        updateOne: {
+          filter: { _id: product._id },
+          update: { $inc: { stock: -quantity } },
+        },
+      });
     }
 
     const totalAmount = billItems.reduce((sum, i) => sum + i.amount, 0);
 
-    // Atomic bill number
-    const counter = await Counter.findOneAndUpdate(
-      { name: "bill" },
-      { $inc: { seq: 1 } },
-      { upsert: true, returnDocument: "after" }
-    );
+    const [counter] = await Promise.all([
+      Counter.findOneAndUpdate(
+        { name: "bill" },
+        { $inc: { seq: 1 } },
+        { upsert: true, returnDocument: "after" }
+      ),
+      Product.bulkWrite(stockOps, { ordered: false }),
+    ]);
 
     const bill = await Bill.create({
       billNumber: counter.seq,

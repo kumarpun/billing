@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Nav() {
   const pathname = usePathname();
@@ -18,11 +19,15 @@ export default function Nav() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    let cancelled = false;
     fetch("/api/auth/me")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => data && setUser(data.user))
+      .then((data) => !cancelled && data && setUser(data.user))
       .catch(() => {});
-  }, [pathname]);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -130,6 +135,7 @@ export default function Nav() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             {/* Desktop user dropdown */}
             <div className="hidden sm:block relative" ref={dropdownRef}>
               <button

@@ -24,4 +24,7 @@ const billSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+billSchema.index({ createdAt: -1 });
+billSchema.index({ paid: 1, createdAt: -1 });
+
 export default mongoose.models.Bill || mongoose.model("Bill", billSchema);
