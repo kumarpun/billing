@@ -160,7 +160,7 @@ export default function ProductsPage() {
             <div key={p._id} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
               <div className="flex items-center justify-between mb-1">
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">{p.name}</span>
-                <span className="font-medium text-zinc-900 dark:text-zinc-50">₹{p.price.toFixed(2)}</span>
+                <span className="font-medium text-zinc-900 dark:text-zinc-50">Rs. {p.price.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mb-3">
                 <span>per {p.unit}</span>
@@ -197,7 +197,7 @@ export default function ProductsPage() {
                 {filtered.map((p) => (
                   <tr key={p._id} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
                     <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-50">{p.name}</td>
-                    <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300">₹{p.price.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300">Rs. {p.price.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right text-red-600 dark:text-red-400">
                       {(p.discount ?? 0) > 0 ? `${p.discount}%` : "—"}
                     </td>
@@ -261,7 +261,7 @@ export default function ProductsPage() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Price (₹)
+                    Price (Rs. )
                   </label>
                   <input
                     type="number"

@@ -76,19 +76,26 @@ export default function BillDetailPage() {
           </div>
         )}
         {/* Header */}
-        <div className="text-center border-b border-zinc-200 pb-4 mb-4 dark:border-zinc-700 print:border-black print:pb-2 print:mb-2">
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 print:text-black print:text-xl">
-            Butwal Neo Clinic
-          </h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300 print:text-black">
-            Dharmapath-8, Sukkhanagar, Butwal
-          </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
-            butwalneoclinic@gmail.com
-          </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
-            PAN: 133660229
-          </p>
+        <div className="flex items-center gap-4 border-b border-zinc-200 pb-4 mb-4 dark:border-zinc-700 print:border-black print:pb-2 print:mb-2">
+          <img
+            src="/logo.jpg"
+            alt="Butwal Neo Clinic"
+            className="h-16 w-auto object-contain print:h-12"
+          />
+          <div className="flex-1 text-left">
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 print:text-black print:text-xl">
+              Butwal Neo Clinic
+            </h1>
+            <p className="text-sm text-zinc-600 dark:text-zinc-300 print:text-black">
+              Dharmapath-8, Sukkhanagar, Butwal
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
+              butwalneoclinic@gmail.com
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 print:text-gray-600">
+              PAN: 133660229
+            </p>
+          </div>
         </div>
 
         {/* Bill info */}
@@ -165,10 +172,10 @@ export default function BillDetailPage() {
                   {item.quantity}
                 </td>
                 <td className="py-2 text-right text-zinc-700 dark:text-zinc-300 print:text-black print:py-1">
-                  ₹{item.productPrice.toFixed(2)}
+                  Rs. {item.productPrice.toFixed(2)}
                 </td>
                 <td className="py-2 text-right font-medium text-zinc-900 dark:text-zinc-50 print:text-black print:py-1">
-                  ₹{item.amount.toFixed(2)}
+                  Rs. {item.amount.toFixed(2)}
                 </td>
               </tr>
             ))}
@@ -182,11 +189,11 @@ export default function BillDetailPage() {
               <>
                 <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400 print:text-gray-700">
                   <span>Subtotal:</span>
-                  <span>₹{(bill.subtotal ?? bill.totalAmount).toFixed(2)}</span>
+                  <span>Rs. {(bill.subtotal ?? bill.totalAmount).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400 print:text-gray-700">
                   <span>Discount ({bill.discountPercent}%):</span>
-                  <span>− ₹{(bill.discountAmount ?? 0).toFixed(2)}</span>
+                  <span>− Rs. {(bill.discountAmount ?? 0).toFixed(2)}</span>
                 </div>
               </>
             )}
@@ -195,7 +202,7 @@ export default function BillDetailPage() {
                 Total:
               </span>
               <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50 print:text-black">
-                ₹{bill.totalAmount.toFixed(2)}
+                Rs. {bill.totalAmount.toFixed(2)}
               </span>
             </div>
           </div>
@@ -203,7 +210,7 @@ export default function BillDetailPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-zinc-400 dark:text-zinc-500 print:text-gray-500 print:mt-3">
-          <p>Celebrating Every Milestone</p>
+          <p>We wish you good health</p>
         </div>
       </div>
     );
@@ -269,7 +276,7 @@ export default function BillDetailPage() {
       {/* Print-only: two copies on same page */}
       <div className="hidden print:block">
         <BillCopy label="Customer Copy" />
-        <div className="my-3 border-t border-dashed border-gray-500 text-center text-[10px] text-gray-500">
+        <div className="my-10 border-t border-dashed border-gray-500 pt-2 text-center text-[10px] text-gray-500">
           — — — — — — — — — — — — cut here — — — — — — — — — — — —
         </div>
         <BillCopy label="Office Copy" />

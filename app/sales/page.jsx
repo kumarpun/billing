@@ -165,7 +165,7 @@ export default function SalesPage() {
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               {bills.length} paid bill{bills.length !== 1 ? "s" : ""} — Revenue:{" "}
               <span className="font-semibold text-green-600 dark:text-green-400">
-                ₹{totalRevenue.toFixed(2)}
+                Rs. {totalRevenue.toFixed(2)}
               </span>
             </p>
           </div>
@@ -189,11 +189,11 @@ export default function SalesPage() {
             <div key={b._id} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono font-medium text-zinc-900 dark:text-zinc-50">#{b.billNumber}</span>
-                <span className="font-medium text-green-700 dark:text-green-400">₹{b.totalAmount.toFixed(2)}</span>
+                <span className="font-medium text-green-700 dark:text-green-400">Rs. {b.totalAmount.toFixed(2)}</span>
               </div>
               {(b.discountPercent ?? 0) > 0 && (
                 <div className="mb-2 text-xs text-red-600 dark:text-red-400">
-                  Discount: {b.discountPercent}% (−₹{(b.discountAmount ?? 0).toFixed(2)})
+                  Discount: {b.discountPercent}% (−Rs. {(b.discountAmount ?? 0).toFixed(2)})
                 </div>
               )}
               <div className="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400 mb-3">
@@ -237,7 +237,7 @@ export default function SalesPage() {
                     <td className="px-4 py-3 text-right text-red-600 dark:text-red-400">
                       {(b.discountPercent ?? 0) > 0 ? `${b.discountPercent}%` : "—"}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-green-700 dark:text-green-400">₹{b.totalAmount.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right font-medium text-green-700 dark:text-green-400">Rs. {b.totalAmount.toFixed(2)}</td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">
                       {b.paidAt ? new Date(b.paidAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
                     </td>
@@ -309,7 +309,7 @@ export default function SalesPage() {
                             {p.name}
                           </p>
                           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            ₹{p.price.toFixed(2)} / {p.unit}
+                            Rs. {p.price.toFixed(2)} / {p.unit}
                           </p>
                         </div>
                         <button
@@ -376,11 +376,11 @@ export default function SalesPage() {
                               className="w-16 rounded border border-zinc-300 px-2 py-1 text-sm text-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
                             />
                             <span className="text-xs text-zinc-400">
-                              × ₹{item.productPrice.toFixed(2)}
+                              × Rs. {item.productPrice.toFixed(2)}
                             </span>
                           </div>
                           <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                            ₹{(item.productPrice * item.quantity).toFixed(2)}
+                            Rs. {(item.productPrice * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -393,7 +393,7 @@ export default function SalesPage() {
                         Total
                       </span>
                       <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                        ₹{cartTotal.toFixed(2)}
+                        Rs. {cartTotal.toFixed(2)}
                       </span>
                     </div>
                   )}
